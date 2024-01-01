@@ -1,82 +1,30 @@
-const express = require('express')
-const app = express()
-var cors = require('cors')
+const express = require("express");
+const app = express();
+var cors = require("cors");
+const uakino = require("./sources/uakino/uakino.js");
+const axios = require("axios");
 
 app.use(express.static("public"));
 app.use(cors());
 
-app.all('/', (req, res) => {
-  res.writeHead(200, {
-      'Content-Type': 'text/html'
-  });
-  console.log("Just got a request!")
-  var listScripts = [];
-  var arr = JSON.parse(req.query.array);
+app.all("/", (req, res) => {});
 
-  res.write(generateNewPage(arr));
-  res.end();
-})
+app.get("/uakino/searchSuggestions/:query", (req, res) => {
 
-app.get('/plugins/:base64', (req, res) => {
-  res.writeHead(200, {
-      'Content-Type': 'text/html'
-  });
-  console.log("Just got a request!")
-  var encoded = req.params.base64;
-  constdecodedString = atob(encoded); // Decoded string  
+  var result = uakino.getSuggestions(req.params.query);
+  result.then((response) => res.send(response))
+});
 
-  // res.send("dfg" + constdecodedString);
-  res.write(generateNewPage([constdecodedString]));
-  res.end();
-})
-app.listen(process.env.PORT || 3000)
+app.get("/uakino/getTranslations/:query", (req, res) => {
+  var decoded = atob(req.params.query);
 
-function generateNewPage(scripts) {
-    var customData = [];
-    scripts.forEach(element => {
-        customData.push(`<script src="${element}"></script>`);
-    });
-    var kLocalExamplePage = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Eneyida</title>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</head>
-<body>
-  <h1>Local demo page</h1>
-  <p>
-    This is an example page used to demonstrate how to load a local file or
-    HTML string using the
-    <a href="https://pub.dev/packages/webview_flutter">Flutter webview</a>
-    plugin.
-  </p>
-  <script>
-    window.onload = function() {
-      HorizonModule.postMessage("123123");
-    };
+  var result = uakino.getTranslationByPage(decoded);
+  result.then((response) => res.send(response))
+});
 
-    function searchSuggestions(title, imdbId, tmdbId) {
-      search().then((response) => window.flutter_inappwebview.callHandler('handlerSuggestions', response));
-      // HorizonModule.postMessage('HELLO' + title)
-    }
+app.get("/uakino/getTranslationById/:id", (req, res) => {
 
-    function getTranslations(extras) {
-      getTranslationsByPage(extras).then((response) => console.log(response));
-    }
-
-    function getFile(translationId) {
-      getTranslationById(translationId).then((response) => console.log(response));
-    }
-
-    var translationsTemp = [];
-
-    // ... (Остальной JavaScript код остается без изменений)
-  </script>
-
-  ${customData.join()}
-</body>
-</html>
-`;
-return kLocalExamplePage;
-}
+  var result = uakino.getTranslationById(req.params.id);
+  result.then((response) => res.send(response))
+});
+app.listen(process.env.PORT || 3000);
