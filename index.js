@@ -3,15 +3,28 @@ const app = express()
 app.use(express.static("public"));
 
 app.all('/', (req, res) => {
-    res.writeHead(200, {
-        'Content-Type': 'text/html'
-    });
-    console.log("Just got a request!")
-    var listScripts = [];
-    var arr = JSON.parse(req.query.array);
- 
-    res.write(generateNewPage(arr));
-    res.end();
+  res.writeHead(200, {
+      'Content-Type': 'text/html'
+  });
+  console.log("Just got a request!")
+  var listScripts = [];
+  var arr = JSON.parse(req.query.array);
+
+  res.write(generateNewPage(arr));
+  res.end();
+})
+
+app.get('/plugins/:base64', (req, res) => {
+  res.writeHead(200, {
+      'Content-Type': 'text/html'
+  });
+  console.log("Just got a request!")
+  var encoded = req.params.base64;
+  constdecodedString = atob(encoded); // Decoded string  
+
+  // res.send("dfg" + constdecodedString);
+  res.write(generateNewPage([constdecodedString]));
+  res.end();
 })
 app.listen(process.env.PORT || 3000)
 
