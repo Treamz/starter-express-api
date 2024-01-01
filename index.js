@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
+var cors = require('cors')
+
 app.use(express.static("public"));
+app.use(cors());
 
 app.all('/', (req, res) => {
   res.writeHead(200, {
