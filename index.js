@@ -7,7 +7,9 @@ const axios = require("axios");
 app.use(express.static("public"));
 app.use(cors());
 
-app.all("/", (req, res) => {});
+app.all("/", (req, res) => {
+  res.send("OK");
+});
 
 app.get("/uakino/searchSuggestions/:query", (req, res) => {
 
